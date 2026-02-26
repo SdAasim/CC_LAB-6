@@ -1,6 +1,17 @@
 FROM jenkins/jenkins:lts
 
 USER root
-RUN apt-get update && apt-get install -y     docker.io     make     g++     curl
 
-USER jenkins
+# Install your original dependencies + docker requirements
+RUN apt-get update && apt-get install -y \
+    docker.io \
+    make \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fix for the "Permission Denied" on the docker socket
+RUN usermod -aG docker jenkins
+
+# We stay as root for this lab to avoid the volume permission issues you saw earlier
+USER root
